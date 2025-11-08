@@ -31,7 +31,7 @@ dependencyResolutionManagement {
 }
 ```
 ```gradle
-implementation ("com.github.hominhphu20903:ColorPickerView:last-version")
+implementation ("com.github.phuhm-armob:ColorPickerView:last-version")
 ```
 # 📦 Usage
 The library has 3 main views called `ColorPicker` `HueSlider` `ColorAlphaSlider` To add them to xml layout do the following:
