@@ -1,5 +1,5 @@
 # 🎨 ColorPickerView
-[![](https://jitpack.io/v/hominhphu20903/ColorPickerView.svg)](https://jitpack.io/#hominhphu20903/ColorPickerView)
+[![](https://jitpack.io/v/mihphu/ColorPickerView.svg)](https://jitpack.io/#mihphu/ColorPickerView)
 
 # 🎬 Preview
 <img width="400" height="400" alt="Frame 1597880347" src="https://github.com/user-attachments/assets/dfed14ce-da64-4a86-bcfb-cf97f8f81f37" />
@@ -12,6 +12,11 @@
 - View size change events are implemented correctly to provide nice animations and layout changes
 - Components of this library both work together and separately
 - Change the value of ColorPicker and Sliders via code
+
+| Artifact | minSdk | Kéo theo Compose |
+|---|---|---|
+| `colorpickerview` | 18 | không |
+| `colorpickerview-compose` | 21 | có |
 
 # 🏄‍♂️ Gradle dependency
 `build.gradle`
@@ -30,8 +35,17 @@ dependencyResolutionManagement {
     }
 }
 ```
+> **Note:** The coordinates below are the expected form for a multi-module JitPack build
+> (`com.github.<owner>.<repo>:<module>:<tag>`). They have not yet been confirmed against an
+> actual JitPack build log for the `1.1.0` tag — check
+> https://jitpack.io/#mihphu/ColorPickerView/1.1.0 and use whatever the log prints if it differs.
+
 ```gradle
-implementation ("com.github.phuhm-armob:ColorPickerView:last-version")
+// XML views — minSdk 18, không kéo theo Compose
+implementation("com.github.mihphu.ColorPickerView:colorpickerview:1.1.0")
+
+// Jetpack Compose — minSdk 21
+implementation("com.github.mihphu.ColorPickerView:colorpickerview-compose:1.1.0")
 ```
 # 📦 Usage
 The library has 3 main views called `ColorPicker` `HueSlider` `ColorAlphaSlider` To add them to xml layout do the following:
@@ -85,6 +99,57 @@ colorPicker.color
 // Java
 colorPicker.getColor();
 ```
+
+# 🧩 Jetpack Compose
+
+Artifact `colorpickerview-compose` là bản viết lại native bằng Compose Canvas. Nó độc lập
+hoàn toàn với artifact XML — thêm một trong hai, hoặc cả hai.
+
+```kotlin
+@Composable
+fun ColorPickerScreen() {
+    val state = rememberColorPickerState(Color.Red)
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        ColorPicker(state = state, modifier = Modifier.height(240.dp))
+        HueSlider(state = state)
+        ColorAlphaSlider(state = state)
+    }
+
+    // state.color là màu đang chọn, đã gồm alpha
+}
+```
+
+Ba composable dùng chung một `ColorPickerState` nên tự đồng bộ với nhau, thay cho việc gán
+`hueSliderView` / `alphaSliderView` bên bản XML. State sống qua xoay màn hình.
+
+Muốn tự quản state thì dùng overload stateless:
+
+```kotlin
+var hue by remember { mutableFloatStateOf(30f) }
+
+HueSlider(hue = hue, onHueChange = { hue = it })
+```
+
+## Tuỳ biến
+
+```kotlin
+ColorAlphaSlider(
+    state = state,
+    colors = ColorPickerDefaults.colors(checkerDark = Color.LightGray),
+    thumb = ColorPickerDefaults.thumb(strokeSize = 4.dp),
+    checkerRows = 4,
+    showChecker = true,
+)
+```
+
+## Khác biệt so với bản XML
+
+- Độ dày thanh khai báo thẳng qua `trackThickness` thay vì suy ra từ chiều cao view.
+- Một callback `onXxxChangeFinished` thay cho cặp listener changed/changeEnd.
+- Dải hue dựng bằng gradient 7 mốc thay vì bitmap 360 px. Mắt thường không phân biệt được.
+- `ColorPicker` không có chiều cao mặc định — cho qua `modifier`.
+
 # 🤖 Color Listener
 ```kotlin
 // ColorPicker
