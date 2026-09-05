@@ -49,12 +49,20 @@ class ColorPickerState internal constructor(
         get() = alphaState.floatValue
         set(newValue) { alphaState.floatValue = newValue.coerceIn(0f, 1f) }
 
-    /** The resulting color. Assigning to this splits it back into the four fields above. */
+    /**
+     * The resulting color. Assigning to this splits it back into the four fields above.
+     *
+     * An achromatic color — white, black, or any grey — carries no hue of its own, and RGB to HSV
+     * conversion reports hue 0 for it. Assigning one therefore keeps the hue already selected,
+     * so that setting the color to white does not swing the hue slider round to red.
+     */
     var color: Color
         get() = Color.hsv(hue, saturation, value, alpha)
         set(newValue) {
             val hsv = rgbToHsv(newValue.red, newValue.green, newValue.blue)
-            hue = hsv[0]
+            if (hsv[1] > 0f) {
+                hue = hsv[0]
+            }
             saturation = hsv[1]
             value = hsv[2]
             alpha = newValue.alpha
@@ -78,10 +86,14 @@ internal val ColorPickerStateSaver: Saver<ColorPickerState, FloatArray> = Saver(
 /**
  * Creates a [ColorPickerState] that survives configuration changes.
  *
- * @param initialColor the initial color; changing this value rebuilds the state.
+ * [initialColor] seeds the state on first composition only. Later changes to it are ignored, the
+ * same way [androidx.compose.foundation.ScrollState] and friends treat their initial values — to
+ * push a new color into an existing state, assign [ColorPickerState.color].
+ *
+ * @param initialColor the color to start from.
  */
 @Composable
 fun rememberColorPickerState(initialColor: Color = Color.Red): ColorPickerState =
-    rememberSaveable(initialColor, saver = ColorPickerStateSaver) {
+    rememberSaveable(saver = ColorPickerStateSaver) {
         ColorPickerState(initialColor)
     }

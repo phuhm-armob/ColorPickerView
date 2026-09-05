@@ -84,6 +84,64 @@ class ColorPickerStateTest {
         assertEquals(state.value, restored.value, 0.01f)
         assertEquals(state.alpha, restored.alpha, 0.01f)
     }
+
+    @Test
+    fun `assigning white keeps the hue already selected`() {
+        val state = ColorPickerState(Color.Red)
+        state.hue = 200f
+
+        state.color = Color.White
+
+        assertEquals(200f, state.hue, 0.01f)
+        assertEquals(0f, state.saturation, 0.01f)
+        assertEquals(1f, state.value, 0.01f)
+    }
+
+    @Test
+    fun `assigning black keeps the hue already selected`() {
+        val state = ColorPickerState(Color.Red)
+        state.hue = 200f
+
+        state.color = Color.Black
+
+        assertEquals(200f, state.hue, 0.01f)
+        assertEquals(0f, state.saturation, 0.01f)
+        assertEquals(0f, state.value, 0.01f)
+    }
+
+    @Test
+    fun `assigning a grey keeps the hue already selected`() {
+        val state = ColorPickerState(Color.Red)
+        state.hue = 137f
+
+        state.color = Color(0.5f, 0.5f, 0.5f, 1f)
+
+        assertEquals(137f, state.hue, 0.01f)
+        assertEquals(0f, state.saturation, 0.01f)
+        assertEquals(0.5f, state.value, 0.01f)
+    }
+
+    @Test
+    fun `assigning a chromatic colour still overwrites the hue`() {
+        val state = ColorPickerState(Color.Red)
+        state.hue = 200f
+
+        state.color = Color(0f, 1f, 0f, 1f)
+
+        assertEquals(120f, state.hue, 0.5f)
+        assertEquals(1f, state.saturation, 0.01f)
+    }
+
+    @Test
+    fun `an achromatic assignment still carries its alpha through`() {
+        val state = ColorPickerState(Color.Red)
+        state.hue = 200f
+
+        state.color = Color(1f, 1f, 1f, 0.25f)
+
+        assertEquals(200f, state.hue, 0.01f)
+        assertEquals(0.25f, state.alpha, 0.01f)
+    }
 }
 
 private object TestSaverScope : androidx.compose.runtime.saveable.SaverScope {
