@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Màu của thumb, outline và ô checkerboard. Dựng qua [ColorPickerDefaults.colors]. */
+/** Colors for the thumb, outline and checkerboard cells. Built via [ColorPickerDefaults.colors]. */
 @Immutable
 class ColorPickerColors internal constructor(
     val thumbStroke: Color,
@@ -16,10 +16,10 @@ class ColorPickerColors internal constructor(
 )
 
 /**
- * Kích thước các vòng của thumb. Dựng qua [ColorPickerDefaults.thumb].
+ * Sizes of the thumb's rings. Built via [ColorPickerDefaults.thumb].
  *
- * [radius] chỉ áp dụng cho [ColorPicker]; hai slider luôn lấy bán kính thumb bằng
- * `trackThickness` của chúng.
+ * [radius] only applies to [ColorPicker]; the two sliders always take their thumb radius from
+ * their own `trackThickness`.
  */
 @Immutable
 class ThumbStyle internal constructor(

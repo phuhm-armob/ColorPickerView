@@ -1,6 +1,10 @@
 package com.happytech.colorpickerview.compose
 
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
@@ -73,6 +77,27 @@ class HueSliderTest {
         rule.onNodeWithTag("hue").performTouchInput { swipeRight() }
 
         rule.runOnIdle { assertEquals(1, finishedCount) }
+    }
+
+    @Test
+    fun theFinishedCallbackReceivesTheHueAtTheEndOfTheGesture() {
+        var finishedHue = -1f
+
+        rule.setContent {
+            var hue by remember { mutableFloatStateOf(0f) }
+            HueSlider(
+                hue = hue,
+                onHueChange = { hue = it },
+                modifier = Modifier.testTag("hue").width(300.dp),
+                onHueChangeFinished = { finishedHue = it },
+            )
+        }
+
+        rule.onNodeWithTag("hue").performTouchInput {
+            click(Offset(width / 2f, height / 2f))
+        }
+
+        rule.runOnIdle { assertEquals(180f, finishedHue, 10f) }
     }
 
     @Test

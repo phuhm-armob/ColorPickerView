@@ -9,12 +9,13 @@ import androidx.compose.ui.graphics.Color
 import com.happytech.colorpickerview.compose.internal.rgbToHsv
 
 /**
- * Màu đang chọn, chia sẻ giữa [ColorPicker], [HueSlider] và [ColorAlphaSlider].
+ * The currently selected color, shared between [ColorPicker], [HueSlider] and
+ * [ColorAlphaSlider].
  *
- * Thay cho cơ chế gán chéo `alphaSliderView` / `hueSliderView` của bản XML.
+ * Replaces the cross-wiring of `alphaSliderView` / `hueSliderView` in the XML version.
  *
- * Mọi setter clamp giá trị thay vì ném exception: setter bị gọi trong lúc recomposition
- * nên ném ra sẽ làm sập UI.
+ * Every setter clamps its value instead of throwing: setters get called during recomposition, so
+ * throwing there would crash the UI.
  */
 @Stable
 class ColorPickerState internal constructor(
@@ -28,7 +29,7 @@ class ColorPickerState internal constructor(
     private val valueState = mutableFloatStateOf(value.coerceIn(0f, 1f))
     private val alphaState = mutableFloatStateOf(alpha.coerceIn(0f, 1f))
 
-    /** Hue theo độ, 0..360. */
+    /** Hue in degrees, 0..360. */
     var hue: Float
         get() = hueState.floatValue
         set(newValue) { hueState.floatValue = newValue.coerceIn(0f, 360f) }
@@ -38,7 +39,7 @@ class ColorPickerState internal constructor(
         get() = saturationState.floatValue
         set(newValue) { saturationState.floatValue = newValue.coerceIn(0f, 1f) }
 
-    /** Value (độ sáng) trong mô hình HSV, 0..1. */
+    /** Value (brightness) in the HSV model, 0..1. */
     var value: Float
         get() = valueState.floatValue
         set(newValue) { valueState.floatValue = newValue.coerceIn(0f, 1f) }
@@ -48,7 +49,7 @@ class ColorPickerState internal constructor(
         get() = alphaState.floatValue
         set(newValue) { alphaState.floatValue = newValue.coerceIn(0f, 1f) }
 
-    /** Màu kết quả. Gán vào đây sẽ tách ngược ra bốn thành phần trên. */
+    /** The resulting color. Assigning to this splits it back into the four fields above. */
     var color: Color
         get() = Color.hsv(hue, saturation, value, alpha)
         set(newValue) {
@@ -59,7 +60,7 @@ class ColorPickerState internal constructor(
             alpha = newValue.alpha
         }
 
-    /** Màu đầy alpha, dùng làm nền gradient cho [ColorAlphaSlider]. */
+    /** Fully opaque color, used as the gradient background for [ColorAlphaSlider]. */
     internal val opaqueColor: Color
         get() = Color.hsv(hue, saturation, value, alpha = 1f)
 }
@@ -75,9 +76,9 @@ internal val ColorPickerStateSaver: Saver<ColorPickerState, FloatArray> = Saver(
 )
 
 /**
- * Tạo một [ColorPickerState] sống qua config change.
+ * Creates a [ColorPickerState] that survives configuration changes.
  *
- * @param initialColor màu ban đầu; đổi giá trị này sẽ dựng lại state.
+ * @param initialColor the initial color; changing this value rebuilds the state.
  */
 @Composable
 fun rememberColorPickerState(initialColor: Color = Color.Red): ColorPickerState =

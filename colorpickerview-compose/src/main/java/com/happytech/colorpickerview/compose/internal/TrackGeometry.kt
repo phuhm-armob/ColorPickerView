@@ -3,10 +3,10 @@ package com.happytech.colorpickerview.compose.internal
 import androidx.compose.ui.geometry.Size
 
 /**
- * Hình học của thanh slider, tính bằng pixel.
+ * Geometry of the slider bar, in pixels.
  *
- * [start] và [end] là tâm của hai đầu bo tròn, tức là khoảng chạy của thumb. Bản thân
- * thanh còn phủ thêm nửa [thickness] ra ngoài mỗi đầu.
+ * [start] and [end] are the centers of the two rounded ends, i.e. the range the thumb travels
+ * over. The bar itself extends an extra half of [thickness] past each end.
  */
 internal class TrackGeometry(
     val start: Float,

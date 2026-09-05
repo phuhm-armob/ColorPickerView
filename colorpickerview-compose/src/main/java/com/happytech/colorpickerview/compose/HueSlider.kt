@@ -15,15 +15,15 @@ import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.happytech.colorpickerview.compose.internal.drawThumb
 import com.happytech.colorpickerview.compose.internal.sliderDrag
 import com.happytech.colorpickerview.compose.internal.trackGeometry
 import com.happytech.colorpickerview.compose.internal.xForFraction
 
 /**
- * Bảy mốc hue. Bản XML dùng bitmap 360 px một-pixel-một-độ; ở đây nội suy tuyến tính
- * giữa bảy mốc, sai khác không nhìn ra được và bỏ được file PNG.
+ * Seven hue stops. The XML version uses a 360 px bitmap, one pixel per degree; here we
+ * linearly interpolate between seven stops — the difference isn't noticeable, and this avoids
+ * shipping a PNG file.
  */
 private val HueStops = listOf(
     Color.Red,
@@ -36,7 +36,7 @@ private val HueStops = listOf(
 )
 
 /**
- * Slider chọn hue, dùng chung [state] với [ColorPicker] và [ColorAlphaSlider].
+ * Slider for picking hue, sharing [state] with [ColorPicker] and [ColorAlphaSlider].
  */
 @Composable
 fun HueSlider(
@@ -59,11 +59,11 @@ fun HueSlider(
 }
 
 /**
- * Slider chọn hue, bản stateless.
+ * Slider for picking hue, stateless version.
  *
- * @param hue hue hiện tại, 0..360.
- * @param onHueChange gọi liên tục trong lúc kéo.
- * @param onHueChangeFinished gọi một lần khi thả tay.
+ * @param hue current hue, 0..360.
+ * @param onHueChange called continuously while dragging.
+ * @param onHueChangeFinished called once when the finger is lifted.
  */
 @Composable
 fun HueSlider(
@@ -87,7 +87,7 @@ fun HueSlider(
             .sliderDrag(
                 trackThickness = trackThickness,
                 onFraction = { onHueChange(it * 360f) },
-                onFinished = { onHueChangeFinished?.invoke(currentHue) },
+                onFinished = { fraction -> onHueChangeFinished?.invoke(fraction * 360f) },
             )
     ) {
         val thicknessPx = trackThickness.toPx()

@@ -1,10 +1,10 @@
 package com.happytech.colorpickerview.compose.internal
 
 /**
- * Đổi RGB (mỗi kênh 0..1) sang HSV thuần Kotlin.
+ * Converts RGB (each channel 0..1) to HSV in pure Kotlin.
  *
- * `android.graphics.Color.colorToHSV` không dùng được vì module này phải unit test được
- * trên JVM.
+ * `android.graphics.Color.colorToHSV` can't be used because this module has to be unit
+ * testable on the JVM.
  *
  * @return `[hue 0..360, saturation 0..1, value 0..1]`
  */

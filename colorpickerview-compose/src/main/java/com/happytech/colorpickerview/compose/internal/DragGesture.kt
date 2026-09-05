@@ -12,16 +12,18 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 
 /**
- * Chạm là nhảy tới vị trí đó luôn rồi kéo tiếp, giống `ACTION_DOWN` của bản XML.
+ * A touch jumps straight to that position and then keeps dragging, matching `ACTION_DOWN` in the
+ * XML version.
  *
- * Hai callback đi qua [rememberUpdatedState] vì khối `pointerInput` chỉ chạy lại khi key
- * đổi — không có nó, lambda bị giữ lại từ lần composition đầu và ghi vào state cũ.
+ * Both callbacks go through [rememberUpdatedState] because the `pointerInput` block only restarts
+ * when its key changes — without this, the lambda would stay captured from the first composition
+ * and write into stale state.
  */
 @Composable
 internal fun Modifier.sliderDrag(
     trackThickness: Dp,
     onFraction: (Float) -> Unit,
-    onFinished: () -> Unit,
+    onFinished: (Float) -> Unit,
 ): Modifier {
     val currentOnFraction by rememberUpdatedState(onFraction)
     val currentOnFinished by rememberUpdatedState(onFinished)
@@ -36,29 +38,34 @@ internal fun Modifier.sliderDrag(
                 thumbRadiusPx = thicknessPx,
             )
 
+            var lastFraction = 0f
+
             val down = awaitFirstDown(requireUnconsumed = false)
-            currentOnFraction(fractionForX(down.position.x, geometry))
+            lastFraction = fractionForX(down.position.x, geometry)
+            currentOnFraction(lastFraction)
             down.consume()
 
             drag(down.id) { change ->
-                currentOnFraction(fractionForX(change.position.x, geometry))
+                lastFraction = fractionForX(change.position.x, geometry)
+                currentOnFraction(lastFraction)
                 change.consume()
             }
 
-            currentOnFinished()
+            currentOnFinished(lastFraction)
         }
     }
 }
 
 /**
- * Bản hai chiều cho mặt phẳng saturation/value. Phát ra `(fractionX, fractionY)` đã clamp
- * 0..1, gốc ở góc trên-trái của vùng vẽ (đã trừ [inset] mỗi cạnh).
+ * Two-dimensional version for the saturation/value plane. Emits `(fractionX, fractionY)` clamped
+ * to 0..1, with the origin at the top-left of the drawing area (after subtracting [inset] from
+ * each edge).
  */
 @Composable
 internal fun Modifier.planeDrag(
     inset: Dp,
     onFraction: (Float, Float) -> Unit,
-    onFinished: () -> Unit,
+    onFinished: (Float, Float) -> Unit,
 ): Modifier {
     val currentOnFraction by rememberUpdatedState(onFraction)
     val currentOnFinished by rememberUpdatedState(onFinished)
@@ -70,10 +77,14 @@ internal fun Modifier.planeDrag(
             val spanX = (size.width - insetPx * 2f).coerceAtLeast(1f)
             val spanY = (size.height - insetPx * 2f).coerceAtLeast(1f)
 
-            fun emit(x: Float, y: Float) = currentOnFraction(
-                ((x - insetPx) / spanX).coerceIn(0f, 1f),
-                ((y - insetPx) / spanY).coerceIn(0f, 1f),
-            )
+            var lastFractionX = 0f
+            var lastFractionY = 0f
+
+            fun emit(x: Float, y: Float) {
+                lastFractionX = ((x - insetPx) / spanX).coerceIn(0f, 1f)
+                lastFractionY = ((y - insetPx) / spanY).coerceIn(0f, 1f)
+                currentOnFraction(lastFractionX, lastFractionY)
+            }
 
             val down = awaitFirstDown(requireUnconsumed = false)
             emit(down.position.x, down.position.y)
@@ -84,7 +95,7 @@ internal fun Modifier.planeDrag(
                 change.consume()
             }
 
-            currentOnFinished()
+            currentOnFinished(lastFractionX, lastFractionY)
         }
     }
 }

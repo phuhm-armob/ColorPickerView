@@ -9,22 +9,29 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
- * Cạnh ô checkerboard, tính bằng pixel nguyên.
+ * Checkerboard cell edge, in whole pixels.
  *
- * Làm tròn về số nguyên là thứ giữ cho ô sắc nét — cạnh rơi vào nửa pixel sẽ bị nhoè.
+ * Rounding to an integer is what keeps the cells crisp — an edge landing on a half pixel gets
+ * blurred.
  */
 internal fun checkerCellSizePx(thicknessPx: Float, rows: Int): Int =
     (thicknessPx / rows.coerceAtLeast(1)).roundToInt().coerceAtLeast(1)
 
 /**
- * Vẽ nền checkerboard trong một hình chữ nhật bo tròn.
+ * Draws the checkerboard background inside a rounded rectangle.
  *
- * Vẽ từng ô trong `clipPath` thay vì dùng shader tile: không phụ thuộc chữ ký
- * `ImageShader` vốn đổi theo phiên bản Compose, và toạ độ ô là pixel nguyên nên sắc nét
- * tuyệt đối.
+ * Draws each cell inside a `clipPath` rather than using a shader tile: it doesn't depend on the
+ * `ImageShader` signature, which changes across Compose versions, and cell coordinates are whole
+ * pixels so the result is perfectly crisp.
+ *
+ * The cell loop runs against a floored origin — pinning cells to whole pixels — while the clip
+ * path itself is built from the true, unfloored rect so the capsule edge stays smooth. The loop
+ * bounds are extended so that flooring the origin can never leave an uncovered sliver at the
+ * trailing edge.
  */
 internal fun DrawScope.drawCheckerboard(
     topLeft: Offset,
@@ -50,8 +57,12 @@ internal fun DrawScope.drawCheckerboard(
         drawRect(color = light, topLeft = topLeft, size = size)
 
         val cell = cellSize.toFloat()
-        val columns = ceil(size.width / cell).toInt()
-        val rows = ceil(size.height / cell).toInt()
+        val originX = floor(topLeft.x)
+        val originY = floor(topLeft.y)
+        // Extend the covered span by the amount flooring shifted the origin, so the last cell
+        // still reaches the true trailing edge.
+        val columns = ceil((topLeft.x + size.width - originX) / cell).toInt()
+        val rows = ceil((topLeft.y + size.height - originY) / cell).toInt()
 
         for (row in 0 until rows) {
             for (column in 0 until columns) {
@@ -59,7 +70,7 @@ internal fun DrawScope.drawCheckerboard(
 
                 drawRect(
                     color = dark,
-                    topLeft = Offset(topLeft.x + column * cell, topLeft.y + row * cell),
+                    topLeft = Offset(originX + column * cell, originY + row * cell),
                     size = Size(cell, cell),
                 )
             }

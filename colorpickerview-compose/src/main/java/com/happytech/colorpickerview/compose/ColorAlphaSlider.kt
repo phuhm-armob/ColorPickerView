@@ -23,7 +23,7 @@ import com.happytech.colorpickerview.compose.internal.trackGeometry
 import com.happytech.colorpickerview.compose.internal.xForFraction
 
 /**
- * Slider chọn alpha, dùng chung [state] với [ColorPicker] và [HueSlider].
+ * Slider for picking alpha, sharing [state] with [ColorPicker] and [HueSlider].
  */
 @Composable
 fun ColorAlphaSlider(
@@ -51,12 +51,13 @@ fun ColorAlphaSlider(
 }
 
 /**
- * Slider chọn alpha, bản stateless.
+ * Slider for picking alpha, stateless version.
  *
- * @param color màu đầy alpha, dùng dựng gradient nền.
- * @param alpha alpha hiện tại, 0..1.
- * @param showChecker có vẽ nền ô caro báo hiệu vùng trong suốt hay không.
- * @param checkerRows số hàng ô theo chiều dày thanh; cạnh ô suy ra từ đây nên ô luôn vuông.
+ * @param color fully opaque color, used to build the background gradient.
+ * @param alpha current alpha, 0..1.
+ * @param showChecker whether to draw the checkerboard background that signals transparency.
+ * @param checkerRows number of cell rows across the thickness of the bar; cell edge is derived
+ *   from this so cells are always square.
  */
 @Composable
 fun ColorAlphaSlider(
@@ -84,7 +85,7 @@ fun ColorAlphaSlider(
             .sliderDrag(
                 trackThickness = trackThickness,
                 onFraction = onAlphaChange,
-                onFinished = { onAlphaChangeFinished?.invoke(currentAlpha) },
+                onFinished = { fraction -> onAlphaChangeFinished?.invoke(fraction) },
             )
     ) {
         val thicknessPx = trackThickness.toPx()

@@ -17,8 +17,11 @@ import com.happytech.colorpickerview.compose.internal.drawThumb
 import com.happytech.colorpickerview.compose.internal.planeDrag
 
 /**
- * Mặt phẳng chọn saturation (trái→phải) và value (trên→dưới), dùng chung [state] với
- * [HueSlider] và [ColorAlphaSlider].
+ * Plane for picking saturation (left→right) and value (top→bottom), sharing [state] with
+ * [HueSlider] and [ColorAlphaSlider].
+ *
+ * Unlike the stateless overload, [onColorChangeFinished] here carries alpha: it reads
+ * [ColorPickerState.color], which includes [ColorPickerState.alpha].
  */
 @Composable
 fun ColorPicker(
@@ -43,18 +46,24 @@ fun ColorPicker(
         thumb = thumb,
         cornerRadius = cornerRadius,
         outlineWidth = outlineWidth,
-        onColorChangeFinished = onColorChangeFinished,
+        onColorChangeFinished = onColorChangeFinished?.let { callback ->
+            { _: Color -> callback(state.color) }
+        },
     )
 }
 
 /**
- * Mặt phẳng chọn saturation/value, bản stateless.
+ * Plane for picking saturation/value, stateless version.
  *
- * Vùng vẽ thụt vào mỗi cạnh đúng bằng `thumb.radius` để thumb không bị cắt ở góc — khớp
- * cách bản XML tính `drawingStart`.
+ * The drawing area is inset on every edge by exactly `thumb.radius` so the thumb isn't clipped
+ * at the corners — matching how the XML version computes `drawingStart`.
  *
- * @param hue hue nền, 0..360; composable này không đổi hue.
- * @param onChange gọi liên tục trong lúc kéo, với saturation và value đã clamp 0..1.
+ * Because this overload has no alpha to give, [onColorChangeFinished] here always reports an
+ * opaque color (`Color.hsv` defaults alpha to 1f). Use the state overload if you need the alpha
+ * that was in effect.
+ *
+ * @param hue background hue, 0..360; this composable does not change hue.
+ * @param onChange called continuously while dragging, with saturation and value clamped to 0..1.
  */
 @Composable
 fun ColorPicker(
@@ -79,9 +88,9 @@ fun ColorPicker(
             .planeDrag(
                 inset = thumb.radius,
                 onFraction = { fractionX, fractionY -> onChange(fractionX, 1f - fractionY) },
-                onFinished = {
+                onFinished = { fractionX, fractionY ->
                     onColorChangeFinished?.invoke(
-                        Color.hsv(currentHue, currentSaturation, currentValue)
+                        Color.hsv(currentHue, fractionX, 1f - fractionY)
                     )
                 },
             )
@@ -116,8 +125,8 @@ fun ColorPicker(
             cornerRadius = corner,
         )
 
-        // Bản XML thụt outline vào outlineSize / 2.5 và bo nhỏ hơn 0.5dp — giữ nguyên
-        // để hai bản trông giống nhau.
+        // The XML version insets the outline by outlineSize / 2.5 and rounds it 0.5dp smaller —
+        // kept as-is so both versions look the same.
         val outline = outlineWidth.toPx()
         val outlineInset = outline / 2.5f
 

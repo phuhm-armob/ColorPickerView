@@ -1,6 +1,10 @@
 package com.happytech.colorpickerview.compose
 
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -77,6 +81,28 @@ class ColorAlphaSliderTest {
         rule.onNodeWithTag("alpha").performTouchInput { swipeLeft() }
 
         rule.runOnIdle { assertEquals(1, finishedCount) }
+    }
+
+    @Test
+    fun theFinishedCallbackReceivesTheAlphaAtTheEndOfTheGesture() {
+        var finishedAlpha = -1f
+
+        rule.setContent {
+            var alpha by remember { mutableFloatStateOf(1f) }
+            ColorAlphaSlider(
+                color = Color.Red,
+                alpha = alpha,
+                onAlphaChange = { alpha = it },
+                modifier = Modifier.testTag("alpha").width(300.dp),
+                onAlphaChangeFinished = { finishedAlpha = it },
+            )
+        }
+
+        rule.onNodeWithTag("alpha").performTouchInput {
+            click(Offset(width / 2f, height / 2f))
+        }
+
+        rule.runOnIdle { assertEquals(0.5f, finishedAlpha, 0.05f) }
     }
 
     @Test

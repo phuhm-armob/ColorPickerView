@@ -13,10 +13,10 @@
 - Components of this library both work together and separately
 - Change the value of ColorPicker and Sliders via code
 
-| Artifact | minSdk | Kéo theo Compose |
+| Artifact | minSdk | Pulls in Compose |
 |---|---|---|
-| `colorpickerview` | 18 | không |
-| `colorpickerview-compose` | 21 | có |
+| `colorpickerview` | 18 | no |
+| `colorpickerview-compose` | 21 | yes |
 
 # 🏄‍♂️ Gradle dependency
 `build.gradle`
@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 > https://jitpack.io/#mihphu/ColorPickerView/1.1.0 and use whatever the log prints if it differs.
 
 ```gradle
-// XML views — minSdk 18, không kéo theo Compose
+// XML views — minSdk 18, does not pull in Compose
 implementation("com.github.mihphu.ColorPickerView:colorpickerview:1.1.0")
 
 // Jetpack Compose — minSdk 21
@@ -102,8 +102,8 @@ colorPicker.getColor();
 
 # 🧩 Jetpack Compose
 
-Artifact `colorpickerview-compose` là bản viết lại native bằng Compose Canvas. Nó độc lập
-hoàn toàn với artifact XML — thêm một trong hai, hoặc cả hai.
+The `colorpickerview-compose` artifact is a native rewrite using Compose Canvas. It is
+completely independent of the XML artifact — add either one, or both.
 
 ```kotlin
 @Composable
@@ -116,14 +116,15 @@ fun ColorPickerScreen() {
         ColorAlphaSlider(state = state)
     }
 
-    // state.color là màu đang chọn, đã gồm alpha
+    // state.color is the currently selected color, including alpha
 }
 ```
 
-Ba composable dùng chung một `ColorPickerState` nên tự đồng bộ với nhau, thay cho việc gán
-`hueSliderView` / `alphaSliderView` bên bản XML. State sống qua xoay màn hình.
+All three composables share one `ColorPickerState`, so they stay in sync automatically —
+replacing the `hueSliderView` / `alphaSliderView` assignment in the XML version. State survives
+screen rotation.
 
-Muốn tự quản state thì dùng overload stateless:
+If you want to manage state yourself, use the stateless overload:
 
 ```kotlin
 var hue by remember { mutableFloatStateOf(30f) }
@@ -131,7 +132,7 @@ var hue by remember { mutableFloatStateOf(30f) }
 HueSlider(hue = hue, onHueChange = { hue = it })
 ```
 
-## Tuỳ biến
+## Customization
 
 ```kotlin
 ColorAlphaSlider(
@@ -143,12 +144,14 @@ ColorAlphaSlider(
 )
 ```
 
-## Khác biệt so với bản XML
+## Differences from the XML version
 
-- Độ dày thanh khai báo thẳng qua `trackThickness` thay vì suy ra từ chiều cao view.
-- Một callback `onXxxChangeFinished` thay cho cặp listener changed/changeEnd.
-- Dải hue dựng bằng gradient 7 mốc thay vì bitmap 360 px. Mắt thường không phân biệt được.
-- `ColorPicker` không có chiều cao mặc định — cho qua `modifier`.
+- Bar thickness is declared directly via `trackThickness` instead of being derived from view
+  height.
+- One `onXxxChangeFinished` callback replaces the pair of changed/changeEnd listeners.
+- The hue band is built from a 7-stop gradient instead of a 360 px bitmap. Not noticeable to
+  the naked eye.
+- `ColorPicker` has no default height — pass one through `modifier`.
 
 # 🤖 Color Listener
 ```kotlin

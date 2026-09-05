@@ -6,7 +6,7 @@ import org.junit.Test
 
 class TrackGeometryTest {
 
-    // slider 300 x 48 px, track dày 12 px, thumb bán kính 12 px
+    // 300 x 48 px slider, 12 px thick track, 12 px thumb radius
     private val geometry = trackGeometry(
         size = Size(300f, 48f),
         thicknessPx = 12f,
