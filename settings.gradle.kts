@@ -27,3 +27,4 @@ dependencyResolutionManagement {
 rootProject.name = "ColorPickerView"
 include(":app")
 include(":colorpickerview")
+include(":colorpickerview-compose")

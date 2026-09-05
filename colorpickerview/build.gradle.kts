@@ -41,9 +41,6 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                groupId = "com.github.hominhphu20903"
-                artifactId = "colorpickerview"
-                version = "1.0.1"
             }
         }
     }
