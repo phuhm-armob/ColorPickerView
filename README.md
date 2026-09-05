@@ -35,16 +35,16 @@ dependencyResolutionManagement {
 
 > **Note:** The coordinates below are the expected form for a multi-module JitPack build
 > (`com.github.<owner>.<repo>:<module>:<tag>`). They have not yet been confirmed against an
-> actual JitPack build log for the `1.1.0` tag — check
-> https://jitpack.io/#mihphu/ColorPickerView/1.1.0 and use whatever the log prints if it differs.
+> actual JitPack build log for the `1.1.1` tag — check
+> https://jitpack.io/#mihphu/ColorPickerView/1.1.1 and use whatever the log prints if it differs.
 
 `build.gradle`
 ```gradle
 // XML views — minSdk 18, does not pull in Compose
-implementation("com.github.mihphu.ColorPickerView:colorpickerview:1.1.0")
+implementation("com.github.mihphu.ColorPickerView:colorpickerview:1.1.1")
 
 // Jetpack Compose — minSdk 21
-implementation("com.github.mihphu.ColorPickerView:colorpickerview-compose:1.1.0")
+implementation("com.github.mihphu.ColorPickerView:colorpickerview-compose:1.1.1")
 ```
 
 ---
@@ -333,7 +333,7 @@ cannot drift apart.
 | `state` | `ColorPickerState` | — | State-based overload. |
 | `hue` | `Float` | — | Stateless overload, `[0..360]`. |
 | `onHueChange` | `(Float) -> Unit` | — | Stateless overload. Fires continuously while dragging. |
-| `trackThickness` | `Dp` | `12.dp` | Thickness of the bar. Also the thumb radius. |
+| `trackThickness` | `Dp` | `12.dp` | Thickness of the bar. Independent of the thumb radius. |
 | `onHueChangeFinished` | `((Float) -> Unit)?` | `null` | Fires once when the finger lifts. |
 
 **`ColorAlphaSlider`**
@@ -344,13 +344,15 @@ cannot drift apart.
 | `color` | `Color` | — | Stateless overload. The color the gradient fades to; its own alpha is ignored. |
 | `alpha` | `Float` | — | Stateless overload, `[0..1]`. |
 | `onAlphaChange` | `(Float) -> Unit` | — | Stateless overload. Fires continuously while dragging. |
-| `trackThickness` | `Dp` | `12.dp` | Thickness of the bar. Also the thumb radius. |
+| `trackThickness` | `Dp` | `12.dp` | Thickness of the bar. Independent of the thumb radius. |
 | `showChecker` | `Boolean` | `true` | Whether to draw the transparency checkerboard. |
 | `checkerRows` | `Int` | `3` | Squares across the bar's thickness. Cell size is derived from it, so a higher number means smaller squares. Below 1 is clamped to 1. |
 | `onAlphaChangeFinished` | `((Float) -> Unit)?` | `null` | Fires once when the finger lifts. |
 
-Because `trackThickness` doubles as the thumb radius, a thickness above 24dp makes the thumb taller
-than the slider's default 48dp height and it will be clipped — raise the height too.
+The thumb radius comes from `thumb` (`ColorPickerDefaults.thumb(radius = ...)`), not from
+`trackThickness`. A radius below half the thickness is raised to it so the bar's rounded caps stay
+inside the slider, and a radius above 24dp makes the slider taller than its default 48dp instead of
+clipping the thumb.
 
 ## `ColorPickerDefaults`
 
@@ -370,7 +372,7 @@ ColorPickerDefaults.colors(
 ): ColorPickerColors
 
 ColorPickerDefaults.thumb(
-    radius: Dp = 12.dp,        // ColorPicker only; sliders use trackThickness
+    radius: Dp = 12.dp,        // thumb radius, for the picker and both sliders
     strokeSize: Dp = 2.dp,
     outlineSize: Dp = 1.dp,
 ): ThumbStyle

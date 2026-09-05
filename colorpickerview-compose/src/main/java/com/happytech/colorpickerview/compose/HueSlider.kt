@@ -17,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.happytech.colorpickerview.compose.internal.drawThumb
 import com.happytech.colorpickerview.compose.internal.sliderDrag
+import com.happytech.colorpickerview.compose.internal.sliderHeight
+import com.happytech.colorpickerview.compose.internal.sliderThumbRadius
 import com.happytech.colorpickerview.compose.internal.trackGeometry
 import com.happytech.colorpickerview.compose.internal.xForFraction
 
@@ -76,22 +78,24 @@ fun HueSlider(
     onHueChangeFinished: ((Float) -> Unit)? = null,
 ) {
     val currentHue = hue.coerceIn(0f, 360f)
+    val thumbRadius = sliderThumbRadius(thumb.radius, trackThickness)
 
     Canvas(
         modifier
             .fillMaxWidth()
-            .height(ColorPickerDefaults.SliderHeight)
+            .height(sliderHeight(thumbRadius))
             .semantics {
                 progressBarRangeInfo = ProgressBarRangeInfo(currentHue, 0f..360f)
             }
             .sliderDrag(
                 trackThickness = trackThickness,
+                thumbRadius = thumbRadius,
                 onFraction = { onHueChange(it * 360f) },
                 onFinished = { fraction -> onHueChangeFinished?.invoke(fraction * 360f) },
             )
     ) {
         val thicknessPx = trackThickness.toPx()
-        val geometry = trackGeometry(size, thicknessPx, thicknessPx)
+        val geometry = trackGeometry(size, thicknessPx, thumbRadius.toPx())
         val half = geometry.thickness / 2f
 
         drawRoundRect(
@@ -107,7 +111,7 @@ fun HueSlider(
 
         drawThumb(
             center = Offset(xForFraction(currentHue / 360f, geometry), geometry.centerY),
-            radius = geometry.thickness,
+            radius = thumbRadius.toPx(),
             color = Color.hsv(currentHue, 1f, 1f),
             colors = colors,
             thumb = thumb,

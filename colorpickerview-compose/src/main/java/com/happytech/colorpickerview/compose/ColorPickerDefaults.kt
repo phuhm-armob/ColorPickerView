@@ -18,8 +18,10 @@ class ColorPickerColors internal constructor(
 /**
  * Sizes of the thumb's rings. Built via [ColorPickerDefaults.thumb].
  *
- * [radius] only applies to [ColorPicker]; the two sliders always take their thumb radius from
- * their own `trackThickness`.
+ * [radius] is the thumb radius everywhere. On the two sliders it is independent of their
+ * `trackThickness`, except that a radius below half the thickness is raised to it so the bar's
+ * rounded caps stay inside the slider; the slider also grows taller than
+ * [ColorPickerDefaults.SliderHeight] when needed so a large thumb isn't clipped.
  */
 @Immutable
 class ThumbStyle internal constructor(

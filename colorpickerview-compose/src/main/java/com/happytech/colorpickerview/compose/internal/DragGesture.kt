@@ -22,20 +22,22 @@ import androidx.compose.ui.unit.Dp
 @Composable
 internal fun Modifier.sliderDrag(
     trackThickness: Dp,
+    thumbRadius: Dp,
     onFraction: (Float) -> Unit,
     onFinished: (Float) -> Unit,
 ): Modifier {
     val currentOnFraction by rememberUpdatedState(onFraction)
     val currentOnFinished by rememberUpdatedState(onFinished)
 
-    return pointerInput(trackThickness) {
+    return pointerInput(trackThickness, thumbRadius) {
         val thicknessPx = trackThickness.toPx()
+        val thumbRadiusPx = thumbRadius.toPx()
 
         awaitEachGesture {
             val geometry = trackGeometry(
                 size = Size(size.width.toFloat(), size.height.toFloat()),
                 thicknessPx = thicknessPx,
-                thumbRadiusPx = thicknessPx,
+                thumbRadiusPx = thumbRadiusPx,
             )
 
             var lastFraction = 0f
