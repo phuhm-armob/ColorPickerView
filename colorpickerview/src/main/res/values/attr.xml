@@ -17,6 +17,9 @@
 
         <attr name="cpv_thumbStrokeSize" format="dimension"/>
         <attr name="cpv_thumbStrokeColor" format="color"/>
+
+        <attr name="cpv_showAlphaChecker" format="boolean"/>
+        <attr name="cpv_alphaCheckerRows" format="integer"/>
     </declare-styleable>
 
 </resources>
