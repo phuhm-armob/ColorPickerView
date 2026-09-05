@@ -43,8 +43,20 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_16sdp"
         app:cpv_thumbOutlineColor="#E6E6E6"
+        app:cpv_showAlphaChecker="true"
+        app:cpv_alphaCheckerRows="2"
         app:cpv_thumbOutlineSize="1dp"
         app:cpv_thumbStrokeColor="@color/white"
         app:cpv_thumbStrokeSize="@dimen/_4sdp"
         app:layout_constraintTop_toBottomOf="@id/hueSlider" />
+
+    <Button
+        android:id="@+id/openComposeSample"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:text="@string/open_compose_sample"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/colorAlphaSlider" />
 </androidx.constraintlayout.widget.ConstraintLayout>

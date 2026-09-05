@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ColorPickerView</string>
+    <string name="compose_sample_title">Compose sample</string>
+    <string name="open_compose_sample">Open Compose sample</string>
 </resources>

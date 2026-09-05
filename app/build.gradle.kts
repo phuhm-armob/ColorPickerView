@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -43,6 +44,7 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        compose = true
     }
 }
 
@@ -61,5 +63,9 @@ dependencies {
     implementation(libs.ssp.android)
     implementation(libs.sdp.android)
 
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(project(":colorpickerview-compose"))
     implementation(project(":colorpickerview"))
 }

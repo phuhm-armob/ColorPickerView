@@ -1,5 +1,6 @@
 package com.happytech.colorpickerview.samples
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -17,5 +18,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.colorPickerView.hueSliderView = binding.hueSlider
         binding.colorPickerView.alphaSliderView = binding.colorAlphaSlider
+
+        binding.openComposeSample.setOnClickListener {
+            startActivity(Intent(this, ComposeSampleActivity::class.java))
+        }
     }
 }
